@@ -1,0 +1,37 @@
+### Envoyer un avis
+POST http://localhost:8080/api/avis HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJub20iOiJzYW5nb2t1Iiwic3ViIjoiYXRzdWhpa29fbW9jaGl6dWtpMjdAbGFwb3N0ZS5uZXQiLCJleHAiOjE3MDk3MzM1MTV9.Es-wNT8obL6cFrL9UrL0QTOlLLhXP6zjF6S12RyhGDo
+Content-Type: application/json
+
+{
+    "message": "tartine et chocollat"
+}
+
+
+
+### S'inscrire au service
+POST http://localhost:8080/api/subscribe HTTP/1.1
+Content-Type: application/json
+
+{
+    "name":"sangoku",
+    "email":"atsuhiko_mochizuki27@laposte.net",
+    "pwd":"kamehameha"
+}
+
+### Activation de l'inscription
+POST http://localhost:8080/api/activation HTTP/1.1
+Content-Type: application/json
+
+{
+    "code":"001736"
+}
+
+### Connexion
+POST http://localhost:8080/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"atsuhiko_mochizuki27@laposte.net",
+    "password":"kamehameha"
+}

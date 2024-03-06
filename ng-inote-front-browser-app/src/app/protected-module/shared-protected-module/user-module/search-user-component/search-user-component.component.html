@@ -1,0 +1,25 @@
+<div class="d-flex justify-content-center align-items-center">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <input #searchBox (keyup)="search(searchBox.value)" type="text" class="form-control" autofocus
+                    placeholder="recherche utilisateur">
+                <fa-icon [icon]="faMagnifyingGlass" class="fa-bounce ms-3"
+                    style="--fa-animation-duration: 2s; --fa-beat-scale: 2.0;"></fa-icon>
+            </div>
+            <ul class="list-group " style="position:fixed">
+                <li *ngFor="let user of users$|async|userFilterPipe:searchBox.value" class="list-group-item">
+                    <a (click)="goToDetailUser(user)">
+                        <div class="d-flex flex-row align-items-center p-2" appBorderMouseNoInitialColorDirective="#009688">
+                            <p class="text-start fs-6 flex-fill"><span class="fw-bold">{{user.pseudo}}</span><br>
+                                {{user.firstName}} {{user.lastName}}
+                            </p>
+                            <img [src]="user.avatar" alt="user avatar" class="img-fluid rounded-circle mb-2 ms-2"
+                                style="object-fit: cover; object-position: center ;width: 2rem; height: 2rem;">
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

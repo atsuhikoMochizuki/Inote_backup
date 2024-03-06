@@ -1,0 +1,31 @@
+<div class="d-flex justify-content-center" style="margin-top:8rem">
+    <div class="card w-25 text-center">
+        <div class="card-header">
+            <strong>Authentification</strong>
+        </div>
+        <div class="card-body">
+            <p><em>{{message}}</em></p>
+            <form #loginForm="ngForm">
+                <div class="d-flex justify-content-start align-items-center">
+                    <input type="text" id="name" [(ngModel)]="name" name="name" required class="form-control"
+                        placeholder="Nom d'utilisateur" autofocus>
+                </div>
+                <div class="d-flex justify-content-start align-items-center mt-3">
+                    <input type="password" id="password" [(ngModel)]="password" name="password" required
+                        class="form-control" placeholder="Mot de passe">
+                </div>
+            </form>
+            <div class="bg-secondary-subtle mt-3 rounded p-3 fst-italic mb-2">
+                <p class="m-0 mb-2"><strong>Identifiants démo:</strong></p>
+                <p class="text-start">nom d'utilisateur: {{userDemo}}<br>
+                    mot de passe: {{userPwdDemo}}
+                </p>
+            </div>
+            <a (click)="login()" class="btn btn-success mt-2" *ngIf="!auth.isLoggedIn">
+                Se connecter
+            </a>
+            <a (click)="logout()" *ngIf="auth.isLoggedIn" class="btn btn-success mt-2">Se déconnecter</a>
+        </div>
+    </div>
+</div>
+<app-footer-component style="position:fixed-bottom"></app-footer-component>

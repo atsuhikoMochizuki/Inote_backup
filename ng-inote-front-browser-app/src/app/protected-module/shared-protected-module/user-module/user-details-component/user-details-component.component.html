@@ -1,0 +1,30 @@
+<div *ngIf='user'
+    class="d-flex flex-row border border-secondary shadow rounded w-50 p-4 ms-auto me-auto align-items-center"
+    style="margin-top: 8rem;">
+    <img [src]="user.picture" alt="user img profile" class="img-fluid me-4"
+        style="width: 15rem; height:15rem ; object-fit: cover; object-position: center ;">
+    <div class="d-flex flex-column flex-wrap">
+        <h1 class="m-0 bg-light">{{user.pseudo}}</h1>
+        <h2 class="m-0">{{user.firstName}} {{user.lastName}}</h2>
+        <p class="m-0">{{user.email}}</p>
+        <p class="m-0">{{user.phone}}</p>
+        <p class="m-0">{{user.job}}</p>
+        <p class="m-0"><em>membre depuis le {{user.subscriptionDate|date:'dd/MM/yyyy'}}</em></p>
+        <p class="m-0">Biographie </p>
+        <div class="overflow-auto p-3 bg-light border border-primary rounded" style="max-height:8rem">
+            {{user.biography}}</div>
+        <hr />
+        <div class="d-flex flex-row justify-content-evenly">
+            <a (click)="goToUserList()" class="text-success" style="text-decoration:none;"
+                appBorderMouseNoInitialColorDirective>RETOUR</a>
+            <a (click)="gotToEditUser(user)" class="text-warning" style="text-decoration:none;"
+                appBorderMouseNoInitialColorDirective="#ffc107">EDITER</a>
+            <a (click)="deleteUser(user)" class="text-danger" style="text-decoration:none;"
+                appBorderMouseNoInitialColorDirective="#dc3545">SUPPRIMER</a>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="!user" class="d-flex">
+    <app-spin-loader-component class="ms-auto me-auto" style="margin-top:15rem"></app-spin-loader-component>
+</div>

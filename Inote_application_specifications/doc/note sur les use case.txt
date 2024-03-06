@@ -1,0 +1,30 @@
+
+https://stackoverflow.com/questions/44057638/uml-use-case-with-login-and-registration?rq=3
+
+Un cas d'utilisation montre la valeur ajoutée que le système considéré apporte à l'un de ses acteurs. À cet égard, Login n'est pas du tout un cas d'utilisation, puisqu'il n'apporte pas de valeur ajoutée. Il s'agit plutôt d'une contrainte que vous pouvez appliquer aux cas d'utilisation.
+
+L'enregistrement n'est pas une bonne dénomination pour une UC. Vous devriez vous en tenir à prédicat/sujet[/objet]. Ainsi, Register for <missing since you did not mention it> est un bon nom pour cette UC. Et, maintenant qu'il s'agit d'une CU singulière, vous voyez qu'elle n'étend rien. L'utilisation de extend/include est de toute façon dans la plupart des cas un signe de décomposition fonctionnelle. Et les CU ne sont pas décomposées, car la valeur ajoutée est une singularité qui ne peut être divisée. N'oubliez pas la mise en garde suivante : si votre diagramme de CU ressemble à une toile d'araignée, votre conception est défectueuse (vous avez essayé la décomposition fonctionnelle).
+
+Je recommande toujours de lire Bittner/Spence pour bien comprendre la synthèse des CU.
+
+
+Ils ne montrent PAS le système, mais seulement sa valeur ajoutée, ce qui est très important
+
+Use neither of your approaches! Login is no use case at all since it adds no value. Use a constraint { needs to be logged on} for use cases where authentication is needed.
+
+La contrainte peut être liée soit à l'UC (tout le monde a besoin d'une authentification), soit au connecteur entre l'UC et l'acteur (ce qui signifie qu'elle ne s'applique qu'à l'acteur en question). Généralement : Les CU apportent une valeur ajoutée. Si vous n'en voyez pas, il n'y a pas de CU.
+
+Extend est utilisé lorsqu'un cas d'utilisation ajoute des étapes à un autre cas d'utilisation de première classe.
+
+Par exemple, imaginons que "Retirer de l'argent" soit un cas d'utilisation d'un distributeur automatique de billets (DAB). Assess Fee étendrait Withdraw Cash et décrirait le "point d'extension" conditionnel qui est instancié lorsque l'utilisateur du DAB n'effectue pas ses opérations bancaires dans l'institution propriétaire du DAB. Notez que le cas d'utilisation de base "Retirer de l'argent" se suffit à lui-même, sans l'extension.
+
+Inclure est utilisé pour extraire des fragments de cas d'utilisation qui sont dupliqués dans plusieurs cas d'utilisation. Le cas d'utilisation inclus ne peut pas être autonome et le cas d'utilisation original n'est pas complet sans le cas d'utilisation inclus. Cette option doit être utilisée avec parcimonie et uniquement dans les cas où la duplication est significative et existe par conception (plutôt que par coïncidence).
+
+Par exemple, le flux d'événements qui se produit au début de chaque cas d'utilisation d'un guichet automatique (lorsque l'utilisateur introduit sa carte de guichet, saisit son code PIN et voit apparaître le menu principal) serait un bon candidat pour une inclusion.
+
+Une très bonne discussion ici:
+https://stackoverflow.com/questions/1696927/whats-is-the-difference-between-include-and-extend-in-use-case-diagram?rq=1
+
+Les cas d'utilisation peuvent inclure d'autres cas d'utilisation, ou un cas d'utilisation peut étendre un autre cas d'utilisation ; ces techniques permettent aux cas d'utilisation d'être conçus de manière à ce que la complexité des cas d'utilisation individuels soit réduite et que le modèle global conserve sa simplicité. Une opération d'inclusion indique que le cas d'utilisation absorbe le comportement d'un autre cas d'utilisation. Par ailleurs, une opération d'extension indique que le cas d'utilisation dépend du comportement du cas d'utilisation de base et peut éventuellement y ajouter l'exécution de ses événements.
+
+Traduit avec DeepL.com (version gratuite)

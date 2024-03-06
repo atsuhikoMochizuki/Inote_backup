@@ -1,0 +1,125 @@
+<form *ngIf="this.user" (ngSubmit)="onSubmit" class="w-50 border border-secondary p-3 rounded ms-auto me-auto" style="margin-top:5rem; margin-bottom: 8rem;"
+  #userEditForm="ngForm">
+  <!-- Pseudonyme -->
+  <div class="mb-3">
+    <label for="pseudo" class="form-label">Pseudonyme<span style="color: red;">*</span></label>
+    <input type="text" class="form-control" id="pseudo" [placeholder]="user.pseudo" required
+      pattern="^[a-zA-Z0-9àéèç_]{1,25}$" [(ngModel)]="user.pseudo" name="pseudo" #pseudo="ngModel">
+    <div [hidden]="pseudo.valid||pseudo.pristine" class="text-danger">
+      Le pseudonyme de l'utilisateur est requis (1-25)
+    </div>
+  </div>
+
+  <!-- avatar -->
+  <div class="mb-3 d-flex flex-row align-items-center">
+    <div class="d-flex flex-column">
+      <label for="avatar" class="form-label">Avatar</label>
+      <input type="file" class="form-control" id="avatar" required [(ngModel)]="user.avatar" name="avatar"
+        #avatar="ngModel" (change)="onFileSelected($event)">
+      <div [hidden]="avatar.valid||avatar.pristine" class="text-danger">
+        Une image pour l'avatar est requise
+      </div>
+    </div>
+    <img [src]="user.picture" alt="img user profile" class="img-fluid me-4 ms-auto"
+      style="width: 10rem; height:10rem ; object-fit: cover; object-position: center ;">
+  </div>
+
+  <!-- Email -->
+  <div class="mb-3">
+    <label for="email" class="form-label">Email<span style="color: red;">*</span></label>
+    <input type="email" class="form-control" id="email" [placeholder]="user.email" required
+      pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" [(ngModel)]="user.email" name="email" #email="ngModel">
+    <div [hidden]="email.valid||email.pristine" class="text-danger">
+      L'email valide de l'utilisateur est requis
+    </div>
+  </div>
+
+  <!-- LastName -->
+  <div class="mb-3">
+    <label for="lastName" class="form-label">Nom</label>
+    <input type="text" class="form-control" id="lastName" [placeholder]="user.lastName" pattern="^[a-zA-Zàéèç ]{1,25}$"
+      [(ngModel)]="user.lastName" name="lastName" #lastName="ngModel">
+    <div [hidden]="lastName.valid||lastName.pristine" class="text-danger">
+      Le nom de l'utilisateur présente un format incorrect
+    </div>
+  </div>
+
+  <!-- FirstName -->
+  <div class="mb-3">
+    <label for="firstName" class="form-label">Prénom</label>
+    <input type="text" class="form-control" id="firstName" [placeholder]="user.firstName"
+      pattern="^[a-zA-Zàéèç ]{1,25}$" [(ngModel)]="user.firstName" name="firstName" #firstName="ngModel">
+    <div [hidden]="firstName.valid||firstName.pristine" class="text-danger">
+      Le prénom de l'utilisateur présente un format incorrect
+    </div>
+  </div>
+
+  <!-- Phone -->
+  <div class="mb-3">
+    <label for="phone" class="form-label">Téléphone</label>
+    <input type="phone" class="form-control" id="phone" [placeholder]="user.phone"
+      pattern="^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$"
+      [(ngModel)]="user.phone" name="phone" #phone="ngModel">
+    <div [hidden]="phone.valid||phone.pristine" class="text-danger">
+      Ce numéro de téléphone présente un format incorrect
+    </div>
+  </div>
+
+  <!-- Profession -->
+  <div class="mb-3">
+    <label for="job" class="form-label">Profession</label>
+    <input type="text" class="form-control" id="job" [placeholder]="user.job" pattern="^[a-zA-Z0-9àéèç]{1,25}$"
+      [(ngModel)]="user.job" name="job" #job="ngModel">
+    <div [hidden]="job.valid||job.pristine" class="text-danger">
+      le champ présente une anomalie
+    </div>
+  </div>
+
+  <!-- Biography -->
+  <div class="mb-3 overflow-auto">
+    <label for="bio" class="form-label">Biographie</label>
+    <textarea class="form-control" id="bio" rows="3" [placeholder]="user.biography" [(ngModel)]="user.biography"
+      name="bio" #bio="ngModel">
+    </textarea>
+  </div>
+
+  <!-- Password -->
+  <div class="mb-3">
+    <label for="password" class="form-label">Mot de passe<span style="color: red;">*</span></label>
+    <input type="password" class="form-control" id="password" [placeholder]="user.password" required
+      pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$" [(ngModel)]="user.password"
+      name="password" #password="ngModel">
+    <div [hidden]="password.valid||password.pristine" class="text-danger">
+      Le champ doit contenir à huit caractères, au moins une lettre majuscule, une lettre minuscule, un chiffre et un
+      caractère spécial.
+    </div>
+  </div>
+  <div [ngSwitch]="user.role">
+    <div *ngSwitchCase="'ADMIN'">
+      <label for="role">Rôle</label>
+      <select class="form-select form-select-sm" aria-label="Small select example" id="role">
+        <option value="1" selected>ADMIN</option>
+        <option value="2">USER</option>
+      </select>
+    </div>
+    <div *ngSwitchDefault>
+      <label for="role">Rôle</label>
+      <select class="form-select form-select-sm" aria-label="Small select example" id="role">
+        <option value="1">ADMIN</option>
+        <option value="2" selected>USER</option>
+      </select>
+    </div>
+  </div>
+<div class="d-flex flex-row justify-content-center mt-3">
+    <button (click)="onSubmit()" type="submit" class="btn btn-primary" [disabled]="!userEditForm.form.valid">
+      <div *ngIf="this.isAddForm">Sauvegarder</div>
+      <div *ngIf="!this.isAddForm">Modifier</div>
+    </button>
+    <p class="col-1"></p>
+    <a routerLink="/users">
+      <button class="btn btn-danger">Annuler</button>
+    </a>
+  </div>
+
+</form>
+<h3 *ngIf="!this.user" class="text-center"><app-spin-loader-component></app-spin-loader-component></h3>
