@@ -1,29 +1,30 @@
-package fr.inote.inote_API.entity;
+package fr.inote.inote_API.entite;
 
-import fr.inote.inote_API.enums.TypeOfRole;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Role {
+@Table(name = "avis")
+public class Avis {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
+    private String message;
+    private String statut;
+    @ManyToOne
+    private Utilisateur utilisateur;
 
-    @Enumerated(EnumType.STRING) // Permet de stocker les valeurs de l'enum sous forme de chaine de caractères
-    private TypeOfRole name;
 }

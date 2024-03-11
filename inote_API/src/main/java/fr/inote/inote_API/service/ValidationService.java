@@ -1,55 +1,55 @@
 package fr.inote.inote_API.service;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+import fr.inote.inote_API.entite.Utilisateur;
+import fr.inote.inote_API.entite.Validation;
+import fr.inote.inote_API.repository.ValidationRepository;
+
 import java.time.Instant;
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import fr.inote.inote_API.entity.User;
-import fr.inote.inote_API.entity.Validation;
-import fr.inote.inote_API.repository.ValidationRepository;
-
-
 import static java.time.temporal.ChronoUnit.MINUTES;
 
+
+@Transactional
+@Slf4j
+@AllArgsConstructor
 @Service
 public class ValidationService {
 
-    @Autowired
     private ValidationRepository validationRepository;
-
-    @Autowired
     private NotificationService notificationService;
 
-    //Enregistrement de la validation
-    public void save(User user) {
-
+    public void enregistrer(Utilisateur utilisateur) {
         Validation validation = new Validation();
-        validation.setUser(user);
-
-        //Date et heure de création
+        validation.setUtilisateur(utilisateur);
         Instant creation = Instant.now();
         validation.setCreation(creation);
-
-        // Date et heure d'expiration
-        Instant expiration = creation.plus(10, MINUTES);
+        Instant expiration = creation.plus(5, MINUTES);
         validation.setExpiration(expiration);
-
-        // génération du code de validation
         Random random = new Random();
-        int randomNumber = random.nextInt(9999);
-        String code = String.format("%06d", randomNumber);
+        int randomInteger = random.nextInt(999999);
+        String code = String.format("%06d", randomInteger);
+
         validation.setCode(code);
-
-        //Enregistrement de la validation
         this.validationRepository.save(validation);
-
-        //Envoi du mail à l'utilisateur
-        this.notificationService.sendNotificationWhenValidationOperation(validation);
+        this.notificationService.envoyer(validation);
     }
 
-    public Validation readAccordingToCode(String code){
+    public Validation lireEnFonctionDuCode(String code) {
         return this.validationRepository.findByCode(code).orElseThrow(() -> new RuntimeException("Votre code est invalide"));
+    }
+
+    @Scheduled(cron="*/30 * * * * *")
+    public void nettoyerTable(){
+        final Instant now = Instant.now();
+        log.info("Suppression des token à {}", now);
+        this.validationRepository.deleteAllByExpirationBefore(now);
     }
 }

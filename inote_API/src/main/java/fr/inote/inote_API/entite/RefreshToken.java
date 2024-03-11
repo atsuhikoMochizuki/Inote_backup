@@ -1,33 +1,33 @@
-package fr.inote.inote_API.entity;
+package fr.inote.inote_API.entite;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-@Getter
+
 @Setter
-@AllArgsConstructor
+@Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Validation {
+@Table(name = "refresh-token")
+public class RefreshToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+    private int id;
+    private boolean expire;
+    private String valeur;
     private Instant creation;
-    private Instant activation;
     private Instant expiration;
 
-    private String code;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private User user;
 }

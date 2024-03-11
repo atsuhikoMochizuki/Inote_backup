@@ -1,7 +1,7 @@
 package fr.inote.inote_API.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import fr.inote.inote_API.entite.Avis;
 
-import fr.inote.inote_API.entity.Avis;
-
-public interface AvisRepository extends CrudRepository<Avis,Integer>{}
+public interface AvisRepository extends JpaRepository<Avis, Integer> {
+}
