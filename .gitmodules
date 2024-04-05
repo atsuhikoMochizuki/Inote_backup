@@ -1,0 +1,9 @@
+[submodule "Inote_RestAPI"]
+	path = Inote_RestAPI
+	url = git@github.com:InoteBackup2/Inote_RestAPI.git
+[submodule "Inote_BrowserInterface"]
+	path = Inote_BrowserInterface
+	url = git@github.com:InoteBackup2/Inote_BrowserInterface.git
+[submodule "Inote_Analyze_Conception"]
+	path = Inote_Analyze_Conception
+	url = git@github.com:InoteBackup2/Inote_Analyze_Conception.git
