@@ -8,5 +8,8 @@
 			"path": "../Inote_Analyze_Conception",
 			"name": "Inote Conception"
 		}
-	]
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
 }
