@@ -17,6 +17,27 @@
 
 ## API REST 
 
+### Gestion des Endpoints
+
+Les retours de l’api seront gérés par ResponseEntity. Le status code devra être spécifié
+
+```java
+@GetMapping(path = Endpoint.GET_CURRENT_USER)
+public ResponseEntity<PublicUserDto> getCurrentUser(@AuthenticationPrincipal User user)
+        throws InoteUserNotFoundException {
+    if (user == null) {
+        throw new InoteUserNotFoundException();
+    }
+    PublicUserDto publicUserDto = new PublicUserDto(user.getName(), user.getUsername(), null, user.isActif(),
+            user.getRole().getName().toString());
+    return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(publicUserDto);
+}
+```
+
+
+
 ### Javadoc
 
 - Méthode
