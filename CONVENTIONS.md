@@ -41,9 +41,189 @@ Toute fusion vers elle exige une requête de tirage et une revue de code.
 La requête de tirage débute par un commentaire dont le titre est le sujet de la branche.
 Sa validation nécessite la validation par un autre contributeur par revue de code.
 
+## FRONT ANGULAR
+
+### Echanges http
+
+Le front initiera les requêtes Http à l’aide du HttpClient de Angular, qui sera injecté via le constructeur de la classe.
+Ce dernier est activé dans l’application par l’import de HttpClientModule depuis le module root (app.module.ts)
+
+Le lancement d’une requête se fera au sein d’une méthode dans un service dédié. 
+Cette dernière : 
+
+- Comportera en arguments les données à envoyer le cas échéant
+
+- devra renvoyer un Observable dont  le type générique correspondra à l’objet renvoyée dans le corps de la réponse.
+- Implémentera du JSON pour transmettre les données. Le cas échéant, elle devra donc contenir le header { "content-type": "application/json" }
+- La méthode comportera l’option “observe” afin de pouvoir accéder à la réponse complète (body, headers, status code)
+- Si la requête necessite une authentification elle sera de la forme suivante:
+  const headers = { Authorization: `Bearer ${bearer}` };
+  Nota : le bearer étant le jwt recu lors de la connexion au service.
+
+Exemple d’un service implémentant des requêtes http
+```typescript
+@Injectable()
+export class PublicUserService {
+  // Http client injection
+  constructor(private http: HttpClient) {}
+
+ /**
+   * loginUser user
+   *
+   * @param emailToSend : string
+   * @param passwordToSend : string
+   *
+   * @returns Observable on HttpResponse<CredentialsDto> that contain jwt & refresh-token
+   *
+   * @author AtsuhikoMochizuki
+   * @date 17-05-2024
+   */
+  loginUser(
+    emailToSend: string,
+    passwordToSend: string
+  ): Observable<HttpResponse<CredentialsDto>> {
+    return (
+      //Envoi de la requête
+      this.http
+		// Method type whith type of attempted data in body response
+        .post<CredentialsDto>(
+          // Url
+          BackEndPoints.SIGN_IN,
+          //Serialized body data
+          JSON.stringify({
+                username: emailToSend,
+                password: passwordToSend,
+              }),
+		  //Options
+          {
+            headers: { "content-type": "application/json" },
+            observe: "response",
+          }
+        )
+    );
+  }
+}
+```
+
+L’exploitation de la méthode implémentant la requête et retournant un Observable
+
+- devra prévoir le scénario en cas d’erreur
+- devra pouvoir manipuler les informations retournées (body, status…)
+
+exemple:
+```typescript
+/**
+   * Login the user
+   *
+   * @param email:string
+   * @param password:string
+   *
+   * @author AtsuhikoMochizuki
+   * @date 17-05-2024
+   */
+  private login(email: string, password: string) {
+    
+    // Service call
+    this.publicUserservice
+      
+    // Service method call with datas to send in body
+      .loginUser(email, password)
+      
+      // Observable subscription
+      .subscribe(
+        // Handle successful response
+        (response: HttpResponse<CredentialsDto>) => {
+          this.statusAfterRequest = response.status;
+          if (this.statusAfterRequest == 200) {
+            this.credentialsDto = response.body;
+            if (this.credentialsDto)
+              this.tokenService.saveToken(this.credentialsDto?.bearer);
+            this.router.navigate(["dashboard"]);
+          }
+        },
+
+        // Handle error
+        (error: HttpErrorResponse) => {
+          this.statusAfterRequest = error.status;
+          this.msgAfterRequest = error.error.detail;
+          return throwError(error.message);
+        }
+      );
+  }
+```
+
+*variante en utilisant une méthode centralisant la gestion de l’erreur*
+
+```javascript
+private login2(email: string, password: string) {
+    
+    // Service call
+    this.publicUserservice
+      
+    // Service method call with datas to send in body
+      .loginUser(email, password)
+      .pipe(catchError(this.handleError))
+      // Observable subscription
+      .subscribe(
+        // Handle successful response
+        (response: HttpResponse<CredentialsDto>) => {
+          this.statusAfterRequest = response.status;
+          if (this.statusAfterRequest == 200) {
+            this.credentialsDto = response.body;
+            if (this.credentialsDto)
+              this.tokenService.saveToken(this.credentialsDto?.bearer);
+            this.router.navigate(["dashboard"]);
+          }
+        },
+
+        // Handle error
+        (error: HttpErrorResponse) => {
+          this.statusAfterRequest = error.status;
+          this.msgAfterRequest = error.error.detail;
+          return throwError(error.message);
+        }
+      );
+  }
+
+  handleError(error: HttpErrorResponse) {
+    let errorMessage = "Unknown error!";
+    if (error.error instanceof ErrorEvent) {
+      // Client-side errors
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side errors
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    window.alert(errorMessage);
+    return throwError(errorMessage);
+  }
+```
+
+### Data Transfert Objects
+
+Leur nom sera suffixé par “Dto”, et ils implémenteront une méthode de sérialisation
+
+```javascript
+export class CredentialsDto {
+  public bearer: string;
+  public refresh: string;
+
+  constructor(bearer: string, refresh: string) {
+    this.bearer = bearer;
+    this.refresh = refresh;
+  }
+
+  serializedData(): string {
+    return JSON.stringify(this);
+  }
+}
+```
+
+
+
 ## API REST
 
-### Gestion des Endpoints
+### Echanges Http
 
 Les retours de l’api seront gérés par ResponseEntity. Le status code devra être spécifié
 
@@ -155,3 +335,15 @@ public void loadUserByUsername_shouldReturnUser_whenUserNameIsPresent() {
   verify(this.userRepository, times(3)).findByEmail(any(String.class));
 }
 ```
+
+
+
+## FRONT END ANGULAR
+
+### Classes
+
+- Constructeurs
+  Hormis de très rares cas, les constructeurs des classes TypeScript avec Angular doivent rester vide. Il ne serviront la plupart du temps qu’à injecter les dépendances.
+- Initialisation des attributs de la classe
+  Toute initialisation de variable s’effectuera dans la méthode Angular dédiée à cet effet, ngOnInit()
+- 
