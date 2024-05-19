@@ -42,6 +42,12 @@ Toute fusion vers elle exige une requête de tirage et une revue de code.
 La requête de tirage débute par un commentaire dont le titre est le sujet de la branche.
 Sa validation nécessite la validation par un autre contributeur par revue de code.
 
+Lors de l’ouverture de la requête de tirage, **afin de pouvoir rendre bien visible l’envoi de son travail dans le kanban de Github:**
+
+- D’ajouter les reviewers
+- D’assigner un label
+- D’assigner le projet Inote, avec le status **Review & merge**
+
 ## Serveur frontal (Angular)
 
 ### Échanges HTTP
