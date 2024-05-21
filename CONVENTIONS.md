@@ -43,10 +43,9 @@ La requête de tirage débute par un commentaire dont le titre est le sujet de l
 Sa validation nécessite la validation par un autre contributeur par revue de code.
 
 Lors de l’ouverture de la requête de tirage, **afin de pouvoir rendre bien visible l’envoi de son travail dans le kanban de Github:**
-
-- D’ajouter les reviewers
-- D’assigner un label
-- D’assigner le projet Inote, avec le status **Review & merge**
+- Ajouter les réviseurs de code ;
+- Assigner un label ;
+- Assigner le projet Inote, avec le statut *Review & merge*.
 
 ## Serveur frontal (Angular)
 
@@ -57,11 +56,10 @@ Ce dernier est activé dans l’application par l’import de `HttpClientModule`
 
 Le lancement d’une requête se fera au sein d’une méthode dans un service dédié. 
 Cette dernière : 
-
 - Comportera en arguments les données à envoyer le cas échéant ;
 - Devra renvoyer un observable dont le type générique correspondra à l’objet renvoyé dans le corps de la réponse ;
 - Implémentera la JSON pour transmettre les données ;
-Le cas échéant, elle devra donc contenir l’en-tête HTTP `{ "content-type": "application/json" }` ;
+- Devra donc contenir l’en-tête HTTP ```{ "content-type": "application/json" }``` le cas échéant ;
 - La méthode comportera l’option `observe` afin de pouvoir accéder à la réponse complète (*body*, *headers*, *status code*…) ;
 - Si la requête necessite une authentification elle sera de la forme suivante :
 ```typescript
@@ -228,22 +226,22 @@ Toute initialisation d’attribut s’effectuera dans la méthode Angular dédi�
 
 ## Serveur dorsal (Spring Boot)
 
-### Gestion des échanges HTTP par les REST controllers
+### Gestion des échanges HTTP par les *REST controllers*
 
-#### Conventions pour les RestControllers
+#### Conventions pour les *RestControllers*
 
-Les classes responsables responsables des échanges avec le front-end seront annotés par @RestController, spécialement désignée pour les api REST, qui HTTP pour manipuler des données.
+Les classes responsables des échanges avec le serveur dorsal seront annotées par `@RestController`.
+Cette annotation est spécialement désignée pour les API REST qui manipulent des données HTTP.
 Ainsi : 
-
-- Le controller retourne directement des données, automatiquement sérialisées dans le format choisi et envoyé dans le corps de la réponse.
+- Le contrôleur retourne directement des données, automatiquement sérialisées dans le format choisi et envoyé dans le corps de la réponse.
 - L’annotation @ResponseBody n’est plus nécessaire
 
-Les controllers : 
+Les contrôleurs : 
+- Renverront *status*, *body* et — le cas échéant — *headers* pour une possibilité d’exploitation maximale côté Angular ;
+- Retourneront `ResponseEntity<typeReturnedData>` à fin de laisser la possibilité d’une exploitation complète de la réponse côté Angular.
 
-- renverront status, body et le cas échéant headers pour une possibilité d’exploitation maximale côté frontend.
-- retourneront ResponseEntity<typeDataRetournée>, afin de laisser la possibilité d’une exploitation complète de la réponse côté front.
-- Le nom du controller respectera la forme :  <TypeExceptionGerée>Handler
-- Si le controller doit recevoir une donnée, un DTO dédié annotée @RequestBody sera intégré en tant que paramètre de la méthode
+Le nom du contrôleur respectera la forme :  `<TypeExceptionManaged>Handler`.
+Si le contrôleur doit recevoir une donnée un DTO dédié annoté `@RequestBody` sera intégré en tant que paramètre de la méthode.
 
 *exemple : *
 
