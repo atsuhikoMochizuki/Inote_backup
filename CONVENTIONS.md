@@ -42,6 +42,11 @@ Toute fusion vers elle exige une requête de tirage et une revue de code.
 La requête de tirage débute par un commentaire dont le titre est le sujet de la branche.
 Sa validation nécessite la validation par un autre contributeur par revue de code.
 
+Lors de l’ouverture de la requête de tirage, **afin de pouvoir rendre bien visible l’envoi de son travail dans le kanban de Github:**
+- Ajouter les réviseurs de code ;
+- Assigner un label ;
+- Assigner le projet Inote, avec le statut *Review & merge*.
+
 ## Serveur frontal (Angular)
 
 ### Échanges HTTP
@@ -51,11 +56,10 @@ Ce dernier est activé dans l’application par l’import de `HttpClientModule`
 
 Le lancement d’une requête se fera au sein d’une méthode dans un service dédié. 
 Cette dernière : 
-
 - Comportera en arguments les données à envoyer le cas échéant ;
 - Devra renvoyer un observable dont le type générique correspondra à l’objet renvoyé dans le corps de la réponse ;
 - Implémentera la JSON pour transmettre les données ;
-Le cas échéant, elle devra donc contenir l’en-tête HTTP `{ "content-type": "application/json" }` ;
+- Devra donc contenir l’en-tête HTTP ```{ "content-type": "application/json" }``` le cas échéant ;
 - La méthode comportera l’option `observe` afin de pouvoir accéder à la réponse complète (*body*, *headers*, *status code*…) ;
 - Si la requête necessite une authentification elle sera de la forme suivante :
 ```typescript
@@ -222,24 +226,220 @@ Toute initialisation d’attribut s’effectuera dans la méthode Angular dédi�
 
 ## Serveur dorsal (Spring Boot)
 
-### Échanges HTTP
+### Gestion des échanges HTTP par les *REST controllers*
 
-Les retours de l’API seront gérés par `ResponseEntity`.
-Le code de statut HTTP devra être spécifié ainsi :
+#### Conventions pour les *RestControllers*
+
+Les classes responsables des échanges avec le serveur dorsal seront annotées par `@RestController`.
+Cette annotation est spécialement désignée pour les API REST qui manipulent des données HTTP.
+Ainsi : 
+- Le contrôleur retourne directement des données, automatiquement sérialisées dans le format choisi et envoyé dans le corps de la réponse.
+- L’annotation @ResponseBody n’est plus nécessaire
+
+Les contrôleurs : 
+- Renverront *status*, *body* et — le cas échéant — *headers* pour une possibilité d’exploitation maximale côté Angular ;
+- Retourneront `ResponseEntity<typeReturnedData>` à fin de laisser la possibilité d’une exploitation complète de la réponse côté Angular.
+
+Le nom du contrôleur respectera la forme :  `<TypeExceptionManaged>Handler`.
+Si le contrôleur doit recevoir une donnée un DTO dédié annoté `@RequestBody` sera intégré en tant que paramètre de la méthode.
+
+*exemple : *
+
 ```java
-@GetMapping(path = Endpoint.GET_CURRENT_USER)
-public ResponseEntity<PublicUserDto> getCurrentUser(@AuthenticationPrincipal User user)
-        throws InoteUserNotFoundException {
-    if (user == null) {
-        throw new InoteUserNotFoundException();
+@Slf4j // For output errors in console
+@RestControllerAdvice	// Exception Centralized manager
+public class ApplicationControllerAdvice {
+
+/**
+ * Create user account
+ * 
+ * @param userDto   Attempted type of data (@ResponseBody is not necessary because using @RestController)
+ * @return ResponseEntity<String> Response entity (http gestion facilities) that contains type of data in response body
+ * @throws InoteExistingEmailException
+ * @throws InoteInvalidEmailException
+ * @throws InoteRoleNotFoundException
+ * @throws InoteInvalidPasswordFormatException
+ * 
+ * @author atsuhikoMochizuki
+ * @date 19/05/2024
+ */
+
+@PostMapping(path = Endpoint.REGISTER)  // HTTP method + Endpoint
+public ResponseEntity<String> register(/*@RequestBody*/ UserDto userDto) { 
+    User userToRegister = User.builder()
+            .email(userDto.username())
+            .name(userDto.name())
+            .password(userDto.password())
+            .build();
+    try {
+        this.userService.register(userToRegister);
+    } catch (InoteMailException | InoteExistingEmailException | InoteInvalidEmailException
+            | InoteRoleNotFoundException
+            | InoteInvalidPasswordFormatException ex) {
+
+        return ResponseEntity
+            // Status code
+            .badRequest()
+            //body response
+            .body(ex.getMessage());
     }
-    PublicUserDto publicUserDto = new PublicUserDto(user.getName(), user.getUsername(), null, user.isActif(),
-            user.getRole().getName().toString());
+
     return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(publicUserDto);
+        // status code
+        .status(HttpStatusCode.valueOf(201))
+        // body response
+        .body(MessagesEn.ACTIVATION_NEED_ACTIVATION);
 }
 ```
+
+#### Modèle d’implémentation des exceptions
+
+Les exceptions seront placées dans la couche crossCutting/exceptions. 
+Le message associé fera référence à une constante définie dans la classe MessageEn.
+
+```java
+public class InoteInvalidEmailFormat extends Exception{
+    public InoteInvalidEmailFormat(){
+        super(EMAIL_ERROR_INVALID_EMAIL_FORMAT);
+    }
+}
+```
+
+
+
+
+
+#### Centralisation des exceptions attrapées dans les controllers REST
+
+La gestion des exceptions attrapées dans les RestControllers de l’api sera sera centralisée dans la classe ApplicationControllerAdvice. 
+
+Voilà comment procéder lorsque l’on souhaite ajouter une exception:
+
+1. On crée l’exception dans la couche crossCutting/exceptions
+
+   *exemple InoteInvalidEmailException.java:*
+
+```java
+public class InoteInvalidEmailException extends Exception {
+    public InoteInvalidEmailException(){
+        super(EMAIL_ERROR_INVALID_EMAIL_FORMAT);
+    }
+}
+```
+
+2. On rajoute ensuite cette exception dans ApplicationControllerAdvice. 
+   On y précisera, à l’aide de la classe ProbemDetail
+
+   - Le status code à renvoyer
+   - Le message à afficher, qui devra être celui de l’exception
+     *exemple:*
+
+   ```java
+   @Slf4j	// For output errors in console
+   @RestControllerAdvice // Handle exceptions in a centralized way for all controllers 
+   public class ApplicationControllerAdvice {
+   
+       @ExceptionHandler(value = InoteInvalidEmailException.class)
+   	public ProblemDetail InoteInvalidEmailException(InoteInvalidEmailException ex) {
+   	// Loging error in console
+       log.error(ex.getMessage(), ex);
+   	
+       return ProblemDetail
+           .forStatusAndDetail(
+               // return status code
+               BAD_REQUEST,
+               // return reason
+               ex.getMessage());
+   	}
+   }
+   ```
+
+Nota : si aucune exception ne correspond à une de celles présente dans la couche crossCutting/exception, l’exception par défaut inoteDefaultExceptionsHandler est appelée:
+```java
+/**
+ * Default exception handler
+ * 
+ * @param ex Default type exception
+ * @return a 401 status code with exception cause
+ * @author atsuhikoMochizuki
+ * @date 19-05-2024
+ */
+@ExceptionHandler(value = Exception.class)
+public ProblemDetail inoteDefaultExceptionHandler(Exception ex) {
+
+    // Loging error in console
+    log.error(ex.getMessage(), ex);
+
+    return ProblemDetail
+            .forStatusAndDetail(
+                    // return status code
+                    BAD_REQUEST,
+                    // return reason
+                    ex.getMessage());
+}
+```
+
+Nota : Spring boot propose certaines annotations permettant de simplifier :
+```java
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Received Invalid Input Parameters")
+    @ExceptionHandler(InputValidationException.class)
+    public void handleException(InputValidationException e) {
+        // Handle the exception and return a custom error response
+    }
+```
+
+Nous ne l’utilisons pas dans la plupart des cas car nous souhaitons récupérer la cause de l’exception générée.
+
+#### Sérialisation / Dé-sérialisation des objets JSON
+
+La classe ObjectMapper sera utilisée à cette effet.
+
+- Sérialisation d’un donnée au format JSON
+  ```java
+  ObjectMapper mapper = new ObjectMapper();
+  Map<String, String> map = new HashMap<>();
+  map.put("key1", "value1");
+  map.put("key2", "value2");
+  
+  String jsonString = mapper.writeValueAsString(map);
+  ```
+
+  A noter que dans le cas précis des controllers, qui sont annotés par @RestController, les données en retournées au front sont automatiquement sérialisées:
+  ```java
+  @PostMapping(path = Endpoint.SIGN_IN)
+  public ResponseEntity<SignInDtoresponse> signIn(@RequestBody AuthenticationDtoRequest authenticationDtorequest) throws AuthenticationException{
+  	/* ... */
+      return ResponseEntity
+              .status(OK)
+              .body(signInDtoresponse);
+  }
+  ```
+
+  
+
+- Désérialisation d’un objet JSON
+  soit l’objet JSON sérialisé  récupéré lors d’un test:
+  *returnedResponse = response.andReturn().getResponse().getContentAsString();*
+
+  ```java
+  {
+      "bearer":"fjsdlfjsljfl",
+      "refresh":"jkdshfjkhdskfhksfhk"
+  }
+  ```
+
+  Pour retrouver l’objet Java à l’aide de ObjectMapper:
+  ```java
+  SignInDtoresponse signInDtoresponse = this.objectMapper.readValue(returnedResponse, SignInDtoresponse.class);
+  ```
+
+  A noter que pour les objets sérialisés en provenance du frontend, fournis en paramètres d’un controller, il suffira d’utiliser l’annotation @RequestBody pour désérialiser la donnée:
+  ```java
+  @PostMapping(path = Endpoint.SIGN_IN)
+  public ResponseEntity<SignInDtoresponse> signIn(@RequestBody AuthenticationDtoRequest authenticationDtorequest) throws AuthenticationException{ /*...*/ }
+  ```
+
+  
 
 ### Javadoc
 
