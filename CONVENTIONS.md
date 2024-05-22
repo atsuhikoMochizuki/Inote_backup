@@ -40,7 +40,7 @@ La branche main va contenir le code fonctionnel du projet. Dans l’optique de m
 
   
 
-  ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/merge_rebase.png)
+  ![](./readme_img/merge_rebase.png)
 
 L’organisation de code partagé, avec Git et Github , s’avère une partie sensible qui peut rapidement devenir *incontrôlable*.
 Nous nous imposerons pour minimiser les problèmes les règles suivantes:
@@ -61,53 +61,53 @@ Nous nous imposerons pour minimiser les problèmes les règles suivantes:
    - L’utilisateur “krilin” commence à travailler sur le modèle de données du système. C’est une étape importante car la base de donnée reposera sur ce travail. 
      Il crée la branche “krilin-SettingUpInformationSystemEntities”
 
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/scenario_1.png)
+![](./readme_img/scenario_1.png)
 
 2. Fin de journée : les contributeurs pushent leur avancées de la journée:
 
-![image-20240522101727341](/home/atsuhiko/snap/typora/88/.config/Typora/typora-user-images/image-20240522101727341.png)
+![](./readme_img/scenario_2.png)
 
 “vue git graph”
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_2.png)
+![](./readme_img/gitGraph_2.png)
 
 3. Sangoku fait une demande d’intégration de son code à la branche principale **en ouvrant un requête de tirage sur Github:**
-   ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_2a.png)
+   ![](./readme_img/gitGraph_2a.png)
 
 Pour finir, après avoir cliqué sur le bouton “create pull request”, **il assigne sa requête de tirage à la colonne “Pull request  Review” du projet:**
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_2b.png)
+![](./readme_img/gitGraph_2b.png)
 
 4. Krilin fait de même
 5. Quand toutes les pull request de la journée sont ouvertes, on peut imaginer un troisième contributeur qui se rend  sur le **kanban du projet** : il voit deux requêtes de tirage à traiter :
-   ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_3a.png)
+   ![](./readme_img/gitGraph_3a.png)
 
 6. Il commence par traiter le travail de Sangoku : cette branche est uniquement technique, ainsi après avoir reviewé le code, il le valide et l’intègre à la branche main avec un **rebase** : *il n’y aura pas de “bosse” qui polluera l’historique de la branche principale, mais une trace de chaque commit de sangoku sera gardée*
 
-   ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_3b.png)
+   ![](./readme_img/gitGraph_3b.png)
 
 7. Il traite ensuite le travail de krilin *: le travail de ce dernier est une étape importante qui doit être à ce titre être visuellement explicite dans l’historique * : il reviewe et valide le code puis le rapatrie en effectuant un **merge** : ceci  **donne lieu à l’apparition d’un nouveau commit sur la branche main**.
 
-   ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_3c.png)
+   ![](./readme_img/gitGraph_3c.png)
 
 8. Nota bene : on peut constater que **le status des pulls request passe automatiquement à “Done” dans le kanban après l’opération**
 
-   ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_3d.png)
+   ![](./readme_img/gitGraph_3d.png)
 
 9. Le lendemain matin Sangoku se remet au travail.
    Il commence toujours par faire un  **git fetch** pour récupérer le résultat du traitement des requêtes de tirage qui s’est effectué la veille au soir.
 
-   ![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_4a.png)
+   ![](./readme_img/gitGraph_4a.png)
 
 Il peut ainsi constater :
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_4b.png)
+![](./readme_img/gitGraph_4b.png)
 
 10. Sangoku se rend sur le kanban : on lui demande de coder aujourd’hui la fonctionnalité “kaméhaméha”.
     Il place cette tâche dans la colonne “In progress” 
 
-    ![image-20240522115306873](/home/atsuhiko/snap/typora/88/.config/Typora/typora-user-images/image-20240522115306873.png)
+![](./readme_img/inProgress.png)
 
 Sangoku revient sur son code et se place sur la branche main en faisant **git checkout main**:
 
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_4c.png)
+![](./readme_img/gitGraph_4c.png)
 
 **Comme sa branche est mineure (rebasée), il la supprime pour éviter de polluer l’historique:**
 
@@ -116,10 +116,10 @@ Sangoku revient sur son code et se place sur la branche main en faisant **git ch
 
 Il rapatrie ensuite, toujours sur la branche main, le code ajouté sur le dépot distant: **git merge origin/main**, ce qui le positionne au dernier commit :
 
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_4d.png)
+![](./readme_img/gitGraph_4d.png)
 
 Puis il crée une nouvelle branche: **git checkout -b sangoku-kamehameha** et continue son travail:
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/gitGraph_5.png)
+![](./readme_img/gitGraph_5.png)
 
 Et ainsi de suite ……..
 
@@ -133,7 +133,7 @@ Néanmoins le dessin ci-dessus récapitule brièvement quelques façons de proc�
 
 
 
-![](/home/atsuhiko/Desktop/21main/Inote/readme_img/fetch_pull.png)
+![](./readme_img/fetch_pull.png)
 
 ### Nommage
 
