@@ -28,112 +28,145 @@ Une interface correspond à une capacité ou un groupe adjectival : `Colorizable
 
 ## Git
 
-### Stratégie d’organisation des commits sur la branche principale
+### Stratégie d’organisation des *commits* sur la branche principale
 
-La branche main va contenir le code fonctionnel du projet. Dans l’optique de maintenir un historique clair et aisément navigable, la stratégie d’organisation des commits et d’intégration de code au dépôt distant est la suivante:
+La branche `main` va contenir le code opérationnel du projet.
+Dans l’optique de maintenir un historique clair et aisément navigable, la stratégie d’organisation des *commits* et d’intégration de code au dépôt distant suit deux cas.
 
-- **Lorsqu’une branche correspond à une étape clé d’un projet** (fonctionnalité, user story….) qui **nécessite une visibilité immédiate dans l’historique**, son intégration dans la branche main se fera à l’aide de **la commande merge** : ceci aura l’effet de mettre en évidence cet apport sous la forme d’une **“bosse”** aisément identifiable. 
-  **LA BRANCHE EST SERA ALORS CONSERVÉE** après son intégration
+Lorsqu’**une branche correspond à une étape clée** d’un projet (fonctionnalité, *user story*…) qui nécessite une **visibilité immédiate dans l’historique**, son intégration dans la branche `main` se fera à l’aide de la commande `git merge`.
+Ceci aura l’effet de mettre en évidence cet apport sous la forme d’une ***bosse*** aisément identifiable. 
+**La branche sera alors concervée** après son intégration.
 
-- Lorsqu’une branche de code **n’existe que pour une raison purement technique**, une “bosse” *polluerait  visuellement* : le code sera donc intégré à l’aide de la commande **rebase.**
-  **LA BRANCHE EST SUPPRIMEE** une fois intégrée 
+Lorsqu’une branche de code **n’existe que pour une raison purement technique**, une *bosse* polluerait  visuellement : le code sera donc intégré à l’aide de la commande `git rebase`.
+**La branche est supprimée** une fois intégrée.
 
-  
+![merge-rebase](./readme_img/merge_rebase.png)
 
-  ![](./readme_img/merge_rebase.png)
+L’organisation de code partagé, avec Git et Github, s’avère être une partie sensible qui peut rapidement devenir *incontrôlable*.
+Nous nous imposerons pour minimiser les problèmes les règles suivantes :
+- **Un seul développeur sur une branche** ;
+- Il n’y a que lors des requêtes de tirage en fin de journée que les *commits* de différents contributeurs se côtoient sur une même branche ;
+- Le code à intégrer à la branche principale se fait toujours par l’intermédiaire d’une requête de tirage, **en fin de journée** ;
+- Le code doit toujours être révisé ;
+- Le code **ne fusionne jamais** vers la branche principale **par son auteur** ;
+- Le contributeur **qui fusionne** le code doit l’avoir **révisé avant** ;
+- Le code sera intégré sur la branche principale directement depuis Github, c’est à cette occasion que la stratégie de fusion ou de rebasage sera à réfléchir ;
+- La gestion des requêtes de tirage s’effectuant **le soir** ;
+- Les contributeurs commencent toujours leur travail de la journée par un `git fetch` pour récupérer les dernières évolutions du dépôt distant et pouvoir les visualiser ;
+- Le contributeur a la responsabilité de supprimer, au moment où il le souhaite, ses branches mineures qui ont été rebasées devant la branche principale.
 
-L’organisation de code partagé, avec Git et Github , s’avère une partie sensible qui peut rapidement devenir *incontrôlable*.
-Nous nous imposerons pour minimiser les problèmes les règles suivantes:
+#### Scénario d’illustration du flux de travail (*workflow*)
 
-- **Un seul développeur sur une branche**. Il n’y a que lors du moment des requêtes de tirage en fin de journée que les commits de différents contributeurs se côtoient sur une même branche.
-- **Le code à intégrer à la branche principale se fait toujours par l’intermédiaire d’une pull request**, **en fin de journée**
-- Le **code doit toujours être reviewé**.
-- **Le code n’est jamais mergé sur la branche principale par celui qui l’a écrit**
-- **Le contributeur qui merge le code doit l’avoir reviewé.**
-- **Le code sera intégré sur la branche principale directement depuis github** :  c’est à cette occasion que la stratégie de fusion ou de rebasage sera à réfléchir.
-- La gestion des pull request s’effectuant le soir, **les contributeurs commencent toujours leur travail de la journée par un git fetch pour récupérer les dernières évolution du dépôt distant et pouvoir les visualiser.** 
-- **Le contributeur a la responsabilité de supprimer, au moment où il le souhaite, les branches mineures qui ont été rebasées dans la branche principale.**
+##### 1. *Commit* initial
 
-#### Scénario d’illustration du workflow
+La branche `main` est crée avec un *commit* initial.
 
-1. La branche main est crée avec un commit initial
-   - L’utilisateur “Sangoku” commence à travailler sur la mise en place de la configuration de environnement de travail : il crée une branche “sangoku-envirronementSetup”
-   - L’utilisateur “krilin” commence à travailler sur le modèle de données du système. C’est une étape importante car la base de donnée reposera sur ce travail. 
-     Il crée la branche “krilin-SettingUpInformationSystemEntities”
+L’utilisateur *Sangoku* commence à travailler sur la mise en place de la configuration de son environnement de travail.
+Il crée une branche `sangoku-environment_setup`.
 
-![](./readme_img/scenario_1.png)
+L’utilisateur *Krilin* commence à travailler sur le modèle de données du système.
+C’est une étape importante car la base de donnée reposera sur ce travail.
+Il crée la branche `krilin-setting_up_information_system_entities`.
 
-2. Fin de journée : les contributeurs pushent leur avancées de la journée:
+![Scénario 1](./readme_img/scenario_1.png)
 
-![](./readme_img/scenario_2.png)
+##### 2. Fin de journée
 
-“vue git graph”
-![](./readme_img/gitGraph_2.png)
+Les contributeurs poussent leurs avancées de la journée.
 
-3. Sangoku fait une demande d’intégration de son code à la branche principale **en ouvrant un requête de tirage sur Github:**
-   ![](./readme_img/gitGraph_2a.png)
+![Scénario 2](./readme_img/scenario_2.png)
 
-Pour finir, après avoir cliqué sur le bouton “create pull request”, **il assigne sa requête de tirage à la colonne “Pull request  Review” du projet:**
-![](./readme_img/gitGraph_2b.png)
+On voit ci-dessous le graphe de Git.
 
-4. Krilin fait de même
-5. Quand toutes les pull request de la journée sont ouvertes, on peut imaginer un troisième contributeur qui se rend  sur le **kanban du projet** : il voit deux requêtes de tirage à traiter :
-   ![](./readme_img/gitGraph_3a.png)
+![Graphe de Git 1](./readme_img/gitGraph_2.png)
 
-6. Il commence par traiter le travail de Sangoku : cette branche est uniquement technique, ainsi après avoir reviewé le code, il le valide et l’intègre à la branche main avec un **rebase** : *il n’y aura pas de “bosse” qui polluera l’historique de la branche principale, mais une trace de chaque commit de sangoku sera gardée*
+##### 3. Demande d’intégration
 
-   ![](./readme_img/gitGraph_3b.png)
+Sangoku fait une demande d’intégration de son code à la branche principale **en ouvrant une requête de tirage sur Github**.
 
-7. Il traite ensuite le travail de krilin *: le travail de ce dernier est une étape importante qui doit être à ce titre être visuellement explicite dans l’historique * : il reviewe et valide le code puis le rapatrie en effectuant un **merge** : ceci  **donne lieu à l’apparition d’un nouveau commit sur la branche main**.
+![Graphe de Git 2](./readme_img/gitGraph_2a.png)
 
-   ![](./readme_img/gitGraph_3c.png)
+Pour finir, après avoir cliqué sur le bouton *Create pull request*, **il assigne sa requête de tirage à la colonne *Pull request review*** du projet.
 
-8. Nota bene : on peut constater que **le status des pulls request passe automatiquement à “Done” dans le kanban après l’opération**
+![Graphe de Git 3](./readme_img/gitGraph_2b.png)
 
-   ![](./readme_img/gitGraph_3d.png)
+Krilin fait de même.
 
-9. Le lendemain matin Sangoku se remet au travail.
-   Il commence toujours par faire un  **git fetch** pour récupérer le résultat du traitement des requêtes de tirage qui s’est effectué la veille au soir.
+##### 5. Rencontre du troisième type
 
-   ![](./readme_img/gitGraph_4a.png)
+Quand toutes les requêtes de tirage de la journée sont ouvertes on peut imaginer qu’un troisième contributeur se rend sur le **kanban du projet**.
+Il voit deux requêtes de tirage à traiter comme le graphe ci-dessous.
 
-Il peut ainsi constater :
-![](./readme_img/gitGraph_4b.png)
+![Graphe de Git 4](./readme_img/gitGraph_3a.png)
 
-10. Sangoku se rend sur le kanban : on lui demande de coder aujourd’hui la fonctionnalité “kaméhaméha”.
-    Il place cette tâche dans la colonne “In progress” 
+##### 6. Revue de code léger
 
-![](./readme_img/inProgress.png)
+Il commence par traiter le travail de Sangoku.
+Cette branche est uniquement technique.
+Ainsi, après avoir révisé le code, il le valide et l’intègre à la branche `main` avec un **rebasage**.
 
-Sangoku revient sur son code et se place sur la branche main en faisant **git checkout main**:
+Il n’y aura pas de *bosse* qui polluera l’historique de la branche principale, mais une trace de chaque *commit* de Sangoku sera gardée.
 
-![](./readme_img/gitGraph_4c.png)
+![Graphe de Git 5](./readme_img/gitGraph_3b.png)
 
-**Comme sa branche est mineure (rebasée), il la supprime pour éviter de polluer l’historique:**
+##### 7. Revue de code lourd
 
-- **en local** : git branch  -d sangoku-StettingUpInformationsSystemEntities
-- **en remote :** git push origin --delete sangoku-StettingUpInformationsSystemEntities
+Il traite ensuite le travail de Krilin.
+Le travail de ce dernier est une étape importante qui doit être à ce titre être visuellement explicite dans l’historique.
+Il révise et valide le code puis le rapatrie en effectuant une **fusion** vers `main`.
+Ceci donne lieu à l’apparition d’un **nouveau *commit*** sur la branche `main`.
 
-Il rapatrie ensuite, toujours sur la branche main, le code ajouté sur le dépot distant: **git merge origin/main**, ce qui le positionne au dernier commit :
+![Graphe de Git 6](./readme_img/gitGraph_3c.png)
 
-![](./readme_img/gitGraph_4d.png)
+*Nota bene* : On peut constater que le statut des requêtes de tirage passe **automatiquement à *Done*** dans le kanban après l’opération.
 
-Puis il crée une nouvelle branche: **git checkout -b sangoku-kamehameha** et continue son travail:
-![](./readme_img/gitGraph_5.png)
+![Graphe de Git 7](./readme_img/gitGraph_3d.png)
 
-Et ainsi de suite ……..
+##### 8. Retour au boulot
 
+Le lendemain matin Sangoku se remet au travail.
+Il commence toujours par faire un `git fetch` pour récupérer le résultat du traitement des requêtes de tirage qui s’est effectué la veille au soir.
 
+![Graphe de Git 8](./readme_img/gitGraph_4a.png)
 
-#### Git Fetch ? Git pull –rebase ? git pull –no-ff ?
+Il peut ainsi constater le prochain graphe.
 
-Le workflow que nous venons de voir à limiter les problèmes.
+![Graphe de Git 9](./readme_img/gitGraph_4b.png)
 
-Néanmoins le dessin ci-dessus récapitule brièvement quelques façons de procéder lorsque la branche distante diffère de la branche locale:
+##### 9. Nouvelle fonctionnalité
 
+Sangoku se rend sur le kanban.
+On lui demande de coder aujourd’hui la fonctionnalité *kamehameha*.
+Il place cette tâche dans la colonne *In progress*. 
 
+![Graphe de Git 10](./readme_img/inProgress.png)
 
-![](./readme_img/fetch_pull.png)
+Sangoku revient sur son code et se place sur la branche `main` en faisant `git checkout main`.
+
+![Graphe de Git 11](./readme_img/gitGraph_4c.png)
+
+Comme sa branche est mineure (rebasée) il la supprime pour éviter de polluer l’historique comme suit :
+- **Dépôt local** : `git branch  -d sangoku-setting_up_informations_system_entities` ;
+- **Dépôt distant** : `git push origin --delete sangoku-setting_up_informations_system_entities`.
+
+Il rapatrie ensuite, toujours sur la branche `main`, le code ajouté sur le dépot distant via `git merge origin/main`.
+Cette commande le positionne au dernier `commit`.
+
+![Graphe de Git 12](./readme_img/gitGraph_4d.png)
+
+Puis il crée une nouvelle branche via `git checkout -b sangoku-kamehameha` et continue son travail.
+
+![Graphe de Git 13](./readme_img/gitGraph_5.png)
+
+…Et ainsi de suite.
+
+#### `git fetch` ? `git pull --rebase` ? `git pull --no-ff` ?
+
+Le flux de travail que nous venons de voir à limité les problèmes.
+
+Néanmoins le dessin ci-dessous récapitule brièvement quelques façons de procéder lorsque la branche distante diffère de la branche locale.
+
+![fetch pull](./readme_img/fetch_pull.png)
 
 ### Nommage
 
