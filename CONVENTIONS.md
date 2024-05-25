@@ -186,6 +186,15 @@ La requête de tirage débute par un commentaire dont le titre est le sujet de l
 
 ## Serveur frontal (Angular)
 
+### Stratégie de génération de composants
+Les règles de gestion des composants retenues sont les suivantes:
+- **Absence de fichier vide**
+- **L'application d'un style css ou l'association d'un template html donne lieu à l'apparition d'un fichier dédié, *quelque soit le nombre de ligne de code qu'il contiendra*.**
+
+Dans cette optique, la stratégie par défaut de génération de composant donnera lieu à l'apparition de 2 fichiers:
+- Un fichier ts
+- Son spec.ts associéè 
+
 ### Échanges HTTP
 
 Le serveur Angular initiera les requêtes HTTP à l’aide du service `HttpClient` d’Angular qui sera injecté via le constructeur de la classe.
