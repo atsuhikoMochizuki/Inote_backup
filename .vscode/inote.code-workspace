@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "../.",
+			"name": "Inote"
+		},
+		{
+			"path": "../Inote_Analyze_Conception",
+			"name": "Inote Conception"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	},
+	"extensions": {
+		"recommendations": [
+			// Git
+			"mhutchie.git-graph"
+		]
+	}
+}
