@@ -11,5 +11,11 @@
 	],
 	"settings": {
 		"java.compile.nullAnalysis.mode": "automatic"
+	},
+	"extensions": {
+		"recommendations": [
+			// Git
+			"mhutchie.git-graph"
+		]
 	}
 }
