@@ -25,8 +25,8 @@ if [ -e "$apiPackage" ]; then
     if [ -f ../smtp-dev/Rnwood.Smtp4dev ]; then
         echo -e "\033[32mOK\033[0m"
         
-        echo -e "\033[93m -- Launch Smtp-dev in new terminal : please enter root password\033[0m"
-        sudo gnome-terminal --title=SMTP4DEV --command "../smtp-dev/Rnwood.Smtp4dev"
+        echo -e "\033[93m -- Launch Smtp-dev in new terminal\033[0m"
+        gnome-terminal --title=SMTP4DEV --command "../smtp-dev/Rnwood.Smtp4dev"
         xdotool windowminimize $(xdotool search --name SMTP4DEV|head -1)
         echo -e -n "\033[93m -- \033[0m"
         echo -e "\033[32mOK\033[0m"
