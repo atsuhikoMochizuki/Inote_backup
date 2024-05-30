@@ -203,45 +203,42 @@ Dans cette optique, la stratégie par défaut de génération de composant donne
 
 ### Échanges HTTP
 
-Le serveur Angular initiera les requêtes HTTP à l’aide du service `**HttpClient**` d’Angular qui sera injecté via le constructeur de la classe.
-Ce dernier est **activé dans l’application au niveau global** : `HttpClientModule` est en conséquence importé depuis le module racine dans `src/app/app.module.ts`.
+Le serveur Angular initiera les requêtes HTTP à l’aide du service `HttpClient` d’Angular qui sera injecté via le constructeur de la classe.
+Ce dernier est activé dans l’application au niveau **global** :
+`HttpClientModule` est en conséquence importé depuis le module racine dans `src/app/app.module.ts`.
 
 #### Envoi d’une requête
 
-Le lancement d’une requête se fera au sein d’une méthode **dans un service dédié.** 
+Le lancement d’une requête HTTP se fera au sein d’une méthode dans un **service dédié**.
 
-Cette dernière : 
+Pour cette méthode, si l’envoi de données est requis, ces données seront transmises sous forme de **DTO en paramètres de méthode**.
+Le DTO sera *sérialisé* en **objet JSON** via la méthode `JSON.stringify`.
+Ceci devra être signalé spécifiquement dans l’en-tête de la requête HTTP, soit `{ "content-type": "application/json" }`.
 
-- Si l’envoi de données est requis:
-  - Ces dernières seront transmise sous forme de **dto en paramètres de méthode.**
-  - Le Dto sera *sérialisé en Objet JSON* via la méthode **stringify()** de l’interface **JSON** de Typescript.
-  - Ceci devra être spécifiquement signalé dans l’en-tête de la requête : `` { "content-type": "application/json" }``
-- Renverra **un observable dont le type générique sera ``HttpResponse<typeDataInBody>``.**
-- La méthode comportera l’option `observe` afin de pouvoir accéder à la réponse complète (*body*, *headers*, *status code*…) ;
-- Par défaut le client Http d’Angular s’attend à recevoir un objet JSON si une donnée est présente dans le corps de la réponse. 
-  Dans le cas où le contenu est de type `` plain/text`` (la réponse contient une chaîne de caractères), il est impératif de le préciser dans la méthode avec l’option ``responseType: 'text'``, autrement une erreur de parsing de la réponse apparaîtra.
-- Si la requête nécessite une authentification elle sera de la forme suivante :
+Cette méthode renverra un **observable** dont le type générique sera `HttpResponse<DataInBodyType>`.
+Elle évoquera aussi `HttpClient` avec l’option `observe` afin de pouvoir accéder à la réponse complète (*body*, *headers*, *status code*…).
 
+Par défaut le client HTTP d’Angular s’attend à recevoir un objet JSON si une donnée est présente dans le corps de la réponse.
+Dans le cas où le contenu est de type `plain/text` (la réponse contient une chaîne de caractères) il est impératif de le préciser dans la méthode avec l’option `responseType: 'text'`.
+Autrement une erreur de formattage (*parsing*) de la réponse apparaîtra.
+
+Si la requête HTTP nécessite une authentification elle sera de la forme suivante :
 ```typescript
 const headers = { 'Authorization': `Bearer ${bearer}` };
 ```
 
-Nota bene : le *bearer* est le JWT reçu lors de la connexion au service.
+*Nota bene* : le *bearer* est le JWT reçu lors de la connexion au service.
 
 ![](./readme_img/Frontend_httpRequest.png)
 
-
-
 #### Exploitation de la méthode d’envoi de requête et de la réponse reçue
 
-- L’envoi de la requête (l’appel au service) nécessite de *souscrire à l’Observable qu’elle est censée renvoyer*.
-  Cette souscription implémentera obligatoirement:
+L’envoi de la requête (l’appel au service) nécessite de *souscrire à l’observable qu’elle est censée renvoyer*.
+Cette souscription implémentera obligatoirement :
+  - La gestion de la réponse ;
+  - La gestion d’une erreur éventuelle.
 
-  - **La gestion de la réponse**
-  - **La gestion d’une éventuelle erreur**
-
-  Exemple:
-
+  Exemple :
   ```typescript
   onSubmitRegister() {
   // Dto creation if needed
@@ -281,8 +278,7 @@ Nota bene : le *bearer* est le JWT reçu lors de la connexion au service.
   }
   ```
 
-  On peut également utiliser ``catchError()`` de Rxjs:
-
+  On peut également utiliser `catchError()` de RxJS :
   ```typescript
   OnSubmit() {
   const signInRequestDto: SignInRequestDto = {
@@ -310,21 +306,17 @@ Nota bene : le *bearer* est le JWT reçu lors de la connexion au service.
   }
   ```
 
-  
-
 ### *Data Transfert Objects*
 
 #### Nommage
 
-Les Dto prendront la forme d’interfaces (type) aux propriétés immuables. 
-Dans un soucis de clarté, ils adopterons le nom de leur pendant côté backend, à savoir:
-```<PurposeOfDto>_<contexte(requête ou réponse)>_Dto ``` par exemple:
-`` PublicUserDtoRequest`` et **les propriétés devront obligatoirement également posséder le même nom** afin d’assurer le bon fonctionnement du transfert de données entre les deux couches
+Les DTO prendront la forme d’interfaces (types) aux propriétés immuables.
+Dans un soucis de clarté, ils adopterons les noms tels qu’ils sont écrits dans le corps de requête en JSON par le serveur dorsal.
 
-*Exemple :*
+Soit `MySubject` le sujet, le DTO de requête du serveur frontal sera `MySubjectRequestDto`.
+L’homologue de réponse du serveur dorsal sera `MySubjectResponseDto`.
 
-- *register-request.dto.ts* (côté frontend)
-
+Exemple de `register-request.dto.ts`, côté frontal :
 ```typescript
 export type RegisterRequestDto = {
     readonly pseudo: string;
@@ -333,8 +325,7 @@ export type RegisterRequestDto = {
 }
 ```
 
-- *RegisterRequestDto.java* (côté backend)
-
+Dans `RegisterRequestDto.java`, côté dorsal :
 ```java
 public record RegisterRequestDto(
     String pseudo,
@@ -343,8 +334,7 @@ public record RegisterRequestDto(
 
 #### Initialisation
 
-Le Dto devra en conséquence *s’initialiser à la volée*:
-
+Le DTO devra en conséquence *s’initialiser à la volée* :
 ```typescript
 onSubmitRegister() {
     // Dto creation if needed
@@ -352,70 +342,61 @@ onSubmitRegister() {
       pseudo: this.pseudonyme,
       username: this.username,
       password: this.password,
-	};
-	/*...*/
-
+    };
+  /*...*/
+}
 ```
 
+#### Sérialisation et désérialisation
 
-
-#### Sérialisation / Dé-sérialisation
-
-- Pour pouvoir être envoyé sur le réseau, *le Dto doit être sérialisé en un objet JSON*. Nous utiliserons pour cela la méthode **stringify**() de l’interface **JSON** proposée par Typescript:
-
+Pour pouvoir être envoyé sur le réseau, le DTO doit être *sérialisé* en un objet JSON.
+Nous utiliserons pour cela la méthode `JSON.stringify` :
 ```typescript
 serializedUserToRegister: string = JSON.stringify(userToRegister);
 ```
 
-- Pour pouvoir être exploité après réception, l’objet JSON doit être dé-sérialisé. Nous utiliserons pour cela la méthode **parse()** de l’interface **JSON** proposée par Typescript:
+Pour pouvoir être exploité après réception, l’objet JSON doit être désérialisé.
+Nous utiliserons pour cela la méthode `JSON.parse`.
+```typescript
+// Objet JSON reçu
+const JSON_STRING: string =
+'{"name": "Tenshinan", "username": "tenshinan@kame-house.com", "password":"ch@ozu!78P"}';
 
-  
+// Reconstruction de l'objet exploitable
+const deserializedUser: PublicUserDtoRequest = JSON.parse(JSON_STRING);
 
-  ```typescript
-  // Objet JSON reçu
-  const jsonString: string =
-    '{"name": "Tenshinan", "username": "tenshinan@kame-house.com", "password":"ch@ozu!78P"}';
-  
-    // Reconstruction de l'objet exploitable
-  const deserializedUser:PublicUserDtoRequest = JSON.parse(jsonString);
-  console.log(deserializedUser.username);
-  
-  ```
-
-  
+console.log(deserializedUser.username);
+```
 
 ### Classes TypeScript
 
 #### Instanciation des objets
 
-Hormis de très rares cas, **les constructeurs des classes TypeScript dans Angular doivent rester vides.**
+Hormis de très rares cas, les constructeurs des classes TypeScript dans Angular doivent **rester vides**.
 Il ne serviront la plupart du temps qu’à **injecter les dépendances.**
 
-Toute **initialisation d’attribut s’effectuera dans la méthode Angular dédiée à cet effet : `ngOnInit`.**
+Toute **initialisation d’attribut** s’effectuera dans la méthode Angular dédiée à cet effet : `ngOnInit`.
 
 ## Serveur dorsal (Spring Boot)
 
 ### Gestion des échanges HTTP par les *REST controllers*
 
-#### Conventions pour les *RestControllers*
+#### Conventions pour les *REST controllers*
 
 Les classes responsables des échanges avec le serveur dorsal seront annotées par `@RestController`.
 Cette annotation est spécialement désignée pour les API REST qui manipulent des données HTTP.
-Ainsi : 
+Ainsi :
+- Le contrôleur retourne directement des données, automatiquement sérialisées dans le format choisi et envoyé dans le corps de la réponse ;
+- L’annotation `@ResponseBody` n’est plus nécessaire.
 
-- Le contrôleur retourne directement des données, automatiquement sérialisées dans le format choisi et envoyé dans le corps de la réponse.
-- L’annotation @ResponseBody n’est plus nécessaire
-
-Les contrôleurs : 
-
+Les contrôleurs :
 - Renverront *status*, *body* et — le cas échéant — *headers* pour une possibilité d’exploitation maximale côté Angular ;
 - Retourneront `ResponseEntity<typeReturnedData>` à fin de laisser la possibilité d’une exploitation complète de la réponse côté Angular.
 
 Le nom du contrôleur respectera la forme :  `<TypeExceptionManaged>Handler`.
 Si le contrôleur doit recevoir une donnée un DTO dédié annoté `@RequestBody` sera intégré en tant que paramètre de la méthode.
 
-*exemple : *
-
+Exemple :
 ```java
 @Slf4j // For output errors in console
 @RestControllerAdvice	// Exception Centralized manager
@@ -475,10 +456,6 @@ public class InoteInvalidEmailFormat extends Exception{
     }
 }
 ```
-
-
-
-
 
 #### Centralisation des exceptions attrapées dans les controllers REST
 
