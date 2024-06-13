@@ -24,7 +24,7 @@ echo -e -n "\033[93m -- Stagging last changes...\033[0m"
 git add .
 echo -e "\033[32mOK\033[0m"
 
-echo -e -n "\033[93m -- Commit last changes...\033[0m"
+echo -n "\033[93m -- Commit last changes...\033[0m"
 git commit -m"$(date +'%H:%M:%S') -- Global updating..."
 echo -e "\033[32mOK\033[0m"
 
