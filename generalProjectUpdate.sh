@@ -26,11 +26,11 @@ echo -e "\033[32mOK\033[0m"
 
 echo -e "\033[93m -- Commit last changes...\033[0m"
 git commit -m"$(date +'%H:%M:%S') -- Global updating..."
-echo -e "\033[32mOK\033[0m"
+echo -e "\033[32m OK\033[0m"
 
-# echo -e -n "\033[93m -- Push last changes on default remote repository...\033[0m"
-# git push origin main
-# echo -e "\033[32mOK\033[0m"
+echo -e "\033[93m -- Push last changes on default remote repository...\033[0m"
+git push origin main
+echo -e "\033[32m OK\033[0m"
 
 # echo -e -n "\033[93m -- Push last changes on mochizuki repository\033[0m"
 # git push mochizuki-portfolio main
