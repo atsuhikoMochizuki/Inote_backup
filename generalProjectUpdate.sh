@@ -5,7 +5,7 @@
 now=$(date +"%Y-%m-%d : %H:%M:%S")
 
 echo -e -n "\033[93m -- Get last changes in submodules...\033[0m"
-git submodule update --remote --merge
+git submodule update --recursive --remote
 echo -e "\033[32mOK\033[0m"
 
 echo -e -n "\033[93m -- Stagging last changes...\033[0m"
