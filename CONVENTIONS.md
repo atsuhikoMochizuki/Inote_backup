@@ -5,7 +5,7 @@
 
 ---
 
-## Convention de nommage
+## Conventions de nommage
 
 ### Casses
 
